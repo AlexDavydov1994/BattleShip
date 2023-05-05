@@ -50,7 +50,7 @@ class Polygon:
                             print(1)
         elif ship.direction == 2:
             for i in range(ship.coordx - ship.size - 1, ship.coordx + 1):
-                for j in range(ship.coordy - 1, ship.coordy + 2):
+                for j in range(ship.coordy - 2, ship.coordy + 1):
                     if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
                         if self.poly[j][i] == '▪':
                             f = False
@@ -82,9 +82,7 @@ class Polygon:
 
     def ship_correct(self, ship):
         f = False
-        f1 = False
         if self.coord_correct(ship):
-            f1 = True
             if ship.direction == 1:
                 if 1 <= ship.coordx + ship.size - 1 <= 6 and 1 <= ship.coordy <= 6:
                     f = True
@@ -101,12 +99,7 @@ class Polygon:
                 f = True
             else:
                 f = False
-        else:
-            f1 = False
-        if f == f1 == True:
-            return True
-        else:
-            return False
+        return f
 
 
 class Ship:
@@ -118,16 +111,14 @@ class Ship:
         self.direction = direction
 
 
-def Winner(poly):
-    f = True
+def winner(poly):
     for i in range(6):
         if '▪' in poly[i]:
-            f = False
-            break
-    return f
+            return False
+    return True
 
 
-def Step(coordX, coordY, poly):
+def step(coordX, coordY, poly):
     f = 0
     try:
         if poly[coordY][coordX] == '▪':
@@ -148,24 +139,37 @@ def Step(coordX, coordY, poly):
         return f
 
 
-def Game(poly_p, poly_c, step):
+def game(poly_p, poly_c, step_game):
     while True:
-        if step == 1:
+        if step_game == 1:
             coordX = int(input('Введите координату Х')) - 1
             coordY = int(input('Введите координату Y')) - 1
-            if Step(coordX, coordY, poly_c) != 1:
-                step = 0
+            if step(coordX, coordY, poly_c) != 1:
+                step_game = 0
         else:
 
             coordX = random.randint(1, 6) - 1
             coordY = random.randint(1, 6) - 1
 
-            if Step(coordX, coordY, poly_p) != 1:
-                step = 1
-        yield step
+            if step(coordX, coordY, poly_p) != 1:
+                step_game = 1
+        yield step_game
 
 
-def Start_game(polygon_player, polygon_comp):
+def Check_poly_on_space(poly):
+    f = 1
+    for i in range(6):
+        for j in range(6):
+            if poly.ship_correct(Ship(i + 1, j + 1, 1)):
+                f = 0
+    if f == 1:
+        for i in range(6):
+            for j in range(6):
+                poly.poly[i][j] = 'o'
+    return f
+
+
+def start_game(polygon_player, polygon_comp):
     print(
         "Добро пожаловать в игру Морской бой.\nПравила:\n1)У вас есть 7 кораблей(один трехпалубный, два двухпалубных и 4 однопалубных), на поле 6 на 6 клеток.\n2)Корабли нужно расставлять на расстоянии не менее одной клетки друг от друга.\n3)Победит тот кто первый разрушит все корабли.\n")
     c3 = 1
@@ -174,6 +178,11 @@ def Start_game(polygon_player, polygon_comp):
     print('Приступим к расстановке кораблей')
     while True and (c1 != 0 or c2 != 0 or c3 != 0):
         try:
+            if c1 > 0 and c2 == 0 and c3 == 0 and Check_poly_on_space(polygon_player):
+                c3 = 1
+                c2 = 2
+                c1 = 4
+                print('Вам надо заполнить поле заного, корабли не поместились')
             if c3 > 0:
                 coordx = int(input('Введите координату х 3палубного корабля 1-6'))
                 coordy = int(input('Введите координату у 3палубного корабля 1-6'))
@@ -211,6 +220,11 @@ def Start_game(polygon_player, polygon_comp):
     c2 = 2
     c1 = 4
     while True and (c1 > 0 or c2 > 0 or c3 > 0):
+        if c1 > 0 and c2 == 0 and c3 == 0 and Check_poly_on_space(polygon_comp):
+            c3 = 1
+            c2 = 2
+            c1 = 4
+            print('Компьютер заполняет поле заного, корабли не поместились')
         if c3 > 0:
             coordx = random.randint(1, 6)
             coordy = random.randint(1, 6)
@@ -229,25 +243,24 @@ def Start_game(polygon_player, polygon_comp):
             if polygon_comp.add_ship(Ship(coordx, coordy, 1)):
                 c1 -= 1
         print(polygon_comp)
-        print(c3, c2, c1)
 
 
 polyc = []
 polyp = []
 polygon_player = Polygon(polyp)
 polygon_computer = Polygon(polyc)
-Start_game(polygon_player, polygon_computer)
-step = 1
+start_game(polygon_player, polygon_computer)
+step_game = 1
 print('Корабли на местах, начнем бой!')
 print('Введите координаты поля противника, куда хотите стрелять:')
-while Winner(polygon_player.poly) == False and Winner(polygon_computer.poly) == False:
+while not(winner(polygon_player.poly)) and not(winner(polygon_computer.poly)):
     try:
-        step = next(Game(polygon_player.poly, polygon_computer.poly, step))
+        step_game = next(game(polygon_player.poly, polygon_computer.poly, step_game))
         print(polygon_player)
         print(polygon_computer)
     except ValueError:
         print('Вводите числа от 1 до 6')
-if Winner(polygon_computer) == True:
+if winner(polygon_computer.poly):
     print('Поздравляю вы выиграли!')
 else:
     print('Вы проиграли. Не расстраивайтесь, повезет в следующий раз!')
