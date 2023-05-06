@@ -5,6 +5,8 @@ class Ship:
         self.coordy = coordy
         self.size = size
         self.direction = direction
+
+
 class Polygon:
     def __init__(self, poly):
         for i in range(6):
@@ -43,7 +45,7 @@ class Polygon:
         else:
             return False
 
-    #Проверка координат вокруг корабля, то что можно ставить корабль в указанные координаты.
+    # Проверка координат вокруг корабля, то что можно ставить корабль в указанные координаты.
     def coord_correct(self, ship):
         f = True
         if ship.direction == 1:
@@ -52,40 +54,35 @@ class Polygon:
                     if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
                         if self.poly[j][i] == '▪':
                             f = False
-                            print(1)
         elif ship.direction == 2:
             for i in range(ship.coordx - ship.size - 1, ship.coordx + 1):
                 for j in range(ship.coordy - 2, ship.coordy + 1):
                     if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
                         if self.poly[j][i] == '▪':
                             f = False
-                            print(2)
         elif ship.direction == 3:
             for i in range(ship.coordx - 2, ship.coordx + 1):
                 for j in range(ship.coordy - ship.size - 1, ship.coordy + 1):
                     if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
                         if self.poly[j][i] == '▪':
                             f = False
-                            print(3)
         elif ship.direction == 4:
             for i in range(ship.coordx - 2, ship.coordx + 1):
                 for j in range(ship.coordy - 2, ship.coordy + ship.size + 1):
                     if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
                         if self.poly[j][i] == '▪':
                             f = False
-                            print(4)
         elif ship.direction == 0:
             for i in range(ship.coordx - 2, ship.coordx + 1):
                 for j in range(ship.coordy - 2, ship.coordy + 1):
                     if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
                         if self.poly[j][i] == '▪':
                             f = False
-                            print(5)
         else:
             f = False
         return f
 
-    #Проверка координат, для установки корабля
+    # Проверка координат, для установки корабля
     def ship_correct(self, ship):
         f = False
         if self.coord_correct(ship):

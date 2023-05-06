@@ -1,6 +1,7 @@
 from Polygon import *
 import random
 
+
 # Проверка победителя
 def winner(poly):
     for i in range(6):
@@ -9,18 +10,19 @@ def winner(poly):
     return True
 
 
-#Ход игрока
+# Ход игрока
 def step(coordX, coordY, poly):
     f = 0
     try:
-        if poly[coordY][coordX] == '▪':#Игрок попал и он снова ходит
+        if poly[coordY][coordX] == '▪':  # Игрок попал и он снова ходит
             poly[coordY][coordX] = 'X'
             print('Вы попали, следующий ход')
             f = 1
-        elif poly[coordY][coordX] == 'T' or poly[coordY][coordX] == 'X':# игрок ввел координату в которую уже стрелял ходит заного
+        elif poly[coordY][coordX] == 'T' or poly[coordY][
+            coordX] == 'X':  # игрок ввел координату в которую уже стрелял ходит заного
             print('Выберите другую клетку для атаку, сюда уже стреляли')
             f = 1
-        elif poly[coordY][coordX] == 'o':#игрок промахнулся
+        elif poly[coordY][coordX] == 'o':  # игрок промахнулся
             poly[coordY][coordX] = 'T'
             print('Вы промахнулись')
             f = 0
@@ -31,7 +33,7 @@ def step(coordX, coordY, poly):
         return f
 
 
-#Игра
+# Игра
 def game(poly_p, poly_c, step_game):
     while True:
         if step_game == 1:
@@ -49,7 +51,7 @@ def game(poly_p, poly_c, step_game):
         yield step_game
 
 
-#Проверка, осталось ли место для оставшихся кораблей.
+# Проверка, осталось ли место для оставшихся кораблей.
 def Check_poly_on_space(poly):
     f = 1
     for i in range(6):
@@ -148,10 +150,12 @@ start_game(polygon_player, polygon_computer)
 step_game = 1
 print('Корабли на местах, начнем бой!')
 print('Введите координаты поля противника, куда хотите стрелять:')
-while not(winner(polygon_player.poly)) and not(winner(polygon_computer.poly)):
+while not (winner(polygon_player.poly)) and not (winner(polygon_computer.poly)):
     try:
         step_game = next(game(polygon_player.poly, polygon_computer.poly, step_game))
+        print('Мое поле')
         print(polygon_player)
+        print('Поле компьютера')
         print(polygon_computer)
     except ValueError:
         print('Вводите числа от 1 до 6')
