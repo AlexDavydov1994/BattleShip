@@ -1,116 +1,7 @@
+from Polygon import *
 import random
 
-
-class Polygon:
-    def __init__(self, poly):
-        for i in range(6):
-            poly.append(['o'] * 6)
-        self.poly = poly
-
-    def __getitem__(self, item):
-        return self.poly
-
-    def __str__(self):
-        s = ' |1|2|3|4|5|6|\n'
-        for i in range(6):
-            s += str(i + 1)
-            for j in range(6):
-                s += f'|{self.poly[i][j]}'
-            s += '|\n'
-        return s
-
-    def add_ship(self, ship):
-        if self.ship_correct(ship):
-            if ship.direction == 1:
-                for i in range(ship.size):
-                    self.poly[ship.coordy - 1][ship.coordx - 1 + i] = '▪'
-            elif ship.direction == 2:
-                for i in range(ship.size):
-                    self.poly[ship.coordy - 1][ship.coordx - 1 - i] = '▪'
-            elif ship.direction == 3:
-                for i in range(ship.size):
-                    self.poly[ship.coordy - 1 - i][ship.coordx - 1] = '▪'
-            elif ship.direction == 4:
-                for i in range(ship.size):
-                    self.poly[ship.coordy - 1 + i][ship.coordx - 1] = '▪'
-            elif ship.direction == 0:
-                self.poly[ship.coordy - 1][ship.coordx - 1] = '▪'
-            return True
-        else:
-            return False
-
-    def coord_correct(self, ship):
-        f = True
-        if ship.direction == 1:
-            for i in range(ship.coordx - 2, ship.coordx + ship.size):
-                for j in range(ship.coordy - 2, ship.coordy + 1):
-                    if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
-                        if self.poly[j][i] == '▪':
-                            f = False
-                            print(1)
-        elif ship.direction == 2:
-            for i in range(ship.coordx - ship.size - 1, ship.coordx + 1):
-                for j in range(ship.coordy - 2, ship.coordy + 1):
-                    if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
-                        if self.poly[j][i] == '▪':
-                            f = False
-                            print(2)
-        elif ship.direction == 3:
-            for i in range(ship.coordx - 2, ship.coordx + 1):
-                for j in range(ship.coordy - ship.size - 1, ship.coordy + 1):
-                    if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
-                        if self.poly[j][i] == '▪':
-                            f = False
-                            print(3)
-        elif ship.direction == 4:
-            for i in range(ship.coordx - 2, ship.coordx + 1):
-                for j in range(ship.coordy - 2, ship.coordy + ship.size + 1):
-                    if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
-                        if self.poly[j][i] == '▪':
-                            f = False
-                            print(4)
-        elif ship.direction == 0:
-            for i in range(ship.coordx - 2, ship.coordx + 1):
-                for j in range(ship.coordy - 2, ship.coordy + 1):
-                    if 1 <= i + 1 <= 6 and 1 <= j + 1 <= 6:
-                        if self.poly[j][i] == '▪':
-                            f = False
-                            print(5)
-        else:
-            f = False
-        return f
-
-    def ship_correct(self, ship):
-        f = False
-        if self.coord_correct(ship):
-            if ship.direction == 1:
-                if 1 <= ship.coordx + ship.size - 1 <= 6 and 1 <= ship.coordy <= 6:
-                    f = True
-            elif ship.direction == 2:
-                if 1 <= ship.coordx - ship.size + 1 <= 6 and 1 <= ship.coordy <= 6:
-                    f = True
-            elif ship.direction == 3:
-                if 1 <= ship.coordx <= 6 and 1 <= ship.coordy - ship.size + 1 <= 6:
-                    f = True
-            elif ship.direction == 4:
-                if 1 <= ship.coordx <= 6 and 1 <= ship.coordy + ship.size - 1 <= 6:
-                    f = True
-            elif ship.direction == 0:
-                f = True
-            else:
-                f = False
-        return f
-
-
-class Ship:
-    def __init__(self, coordx, coordy, size,
-                 direction=0):  # direction:1-horizontal right 2-horizontal left 3- vertical up 4-vertical down
-        self.coordx = coordx
-        self.coordy = coordy
-        self.size = size
-        self.direction = direction
-
-
+# Проверка победителя
 def winner(poly):
     for i in range(6):
         if '▪' in poly[i]:
@@ -118,17 +9,18 @@ def winner(poly):
     return True
 
 
+#Ход игрока
 def step(coordX, coordY, poly):
     f = 0
     try:
-        if poly[coordY][coordX] == '▪':
+        if poly[coordY][coordX] == '▪':#Игрок попал и он снова ходит
             poly[coordY][coordX] = 'X'
             print('Вы попали, следующий ход')
             f = 1
-        elif poly[coordY][coordX] == 'T' or poly[coordY][coordX] == 'X':
+        elif poly[coordY][coordX] == 'T' or poly[coordY][coordX] == 'X':# игрок ввел координату в которую уже стрелял ходит заного
             print('Выберите другую клетку для атаку, сюда уже стреляли')
             f = 1
-        elif poly[coordY][coordX] == 'o':
+        elif poly[coordY][coordX] == 'o':#игрок промахнулся
             poly[coordY][coordX] = 'T'
             print('Вы промахнулись')
             f = 0
@@ -139,6 +31,7 @@ def step(coordX, coordY, poly):
         return f
 
 
+#Игра
 def game(poly_p, poly_c, step_game):
     while True:
         if step_game == 1:
@@ -156,6 +49,7 @@ def game(poly_p, poly_c, step_game):
         yield step_game
 
 
+#Проверка, осталось ли место для оставшихся кораблей.
 def Check_poly_on_space(poly):
     f = 1
     for i in range(6):
@@ -169,6 +63,7 @@ def Check_poly_on_space(poly):
     return f
 
 
+# Расстановка кораблей
 def start_game(polygon_player, polygon_comp):
     print(
         "Добро пожаловать в игру Морской бой.\nПравила:\n1)У вас есть 7 кораблей(один трехпалубный, два двухпалубных и 4 однопалубных), на поле 6 на 6 клеток.\n2)Корабли нужно расставлять на расстоянии не менее одной клетки друг от друга.\n3)Победит тот кто первый разрушит все корабли.\n")
